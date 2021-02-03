@@ -21,49 +21,57 @@ def mars_news(browser):
     html = browser.html
     news_soup = soup(html, 'html.parser')
 
-    slide_elem = news_soup.select_one('ul.item_list li.slide')
-
-    # Scrape the title of the first article
-    slide_elem.find("div", class_='content_title')
-
-    # Use parent elememt to find first 'a' tag and save it
-    news_title = slide_elem.find('div', class_='content_title').get_text()
-    news_title
-
-    # Use the parent element to find the paragraph text
-    news_p = slide_elem.find('div', class_='article_teaser_body').get_text()
-    news_p
-
+    # try/except for error handling
+    try:
+        # Scrape the title of the first article
+        slide_elem = news_soup.select_one('ul.item_list li.slide')
+        # Use parent elememt to find first 'a' tag and save it
+        news_title = slide_elem.find('div', class_='content_title').get_text()
+        # Use the parent element to find the paragraph text
+        news_p = slide_elem.find('div', class_='article_teaser_body').get_text()
+    except AttributeError:
+        return None, None
     return news_title, news_p
 
 ## Nasa JPL Image Scraping
 
-# Visit URL
-url = 'https://data-class-jpl-space.s3.amazonaws.com/JPL_Space/index.html'
-browser.visit(url)
+def featured_image(browser):
+    # Visit URL
+    url = 'https://data-class-jpl-space.s3.amazonaws.com/JPL_Space/index.html'
+    browser.visit(url)
 
-# Find and click the full image button
-full_image_elem = browser.find_by_tag('button')[1]
-full_image_elem.click()
+    # Find and click the full image button
+    full_image_elem = browser.find_by_tag('button')[1]
+    full_image_elem.click()
+    # Parse the resulting html with soup
+    html = browser.html
+    img_soup = soup(html, 'html.parser')
 
-# Parse the resulting html with soup
-html = browser.html
-img_soup = soup(html, 'html.parser')
+    # try/except error handling
+    try:
+        # Find the relative image url
+        img_url_rel = img_soup.find('img', class_='fancybox-image').get('src')
+    except AttributeError:
+        return None
 
-# Find the relative image url
-img_url_rel = img_soup.find('img', class_='fancybox-image').get('src')
-img_url_rel
+    # Use the base URL to create an absolute URL
+    img_url = f'https://data-class-jpl-space.s3.amazonaws.com/JPL_Space/{img_url_rel}'
 
-# Use the base URL to create an absolute URL
-img_url = f'https://data-class-jpl-space.s3.amazonaws.com/JPL_Space/{img_url_rel}'
-img_url
+    return img_url
 
 # Mars facts scraping
-df = pd.read_html('http://space-facts.com/mars/')[0]
-df.columns = ['description','value']
-df.set_index('description', inplace=True)
-df
+def mars_facts():
+    # try/except error handling
+    try:
+        # use 'read_html' to scrape the facts table into a dataframe
+        df = pd.read_html('http://space-facts.com/mars/')[0]
+    except BaseException:
+        return None
 
-df.to_html()
+    # assign columns and set index
+    df.columns = ['Description','Mars']
+    df.set_index('Description', inplace=True)
+    # convert df into html format, add bootstrap
+    return df.to_html()
 
 browser.quit()
