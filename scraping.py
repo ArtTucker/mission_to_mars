@@ -1,39 +1,43 @@
-#!/usr/bin/env python
-# coding: utf-8
 
 # Dependencies
 from splinter import Browser
 from bs4 import BeautifulSoup as soup
 import pandas as pd
-
 # Set the executable path and initialize the chrome browser in splinter
 executable_path = {'executable_path': '/usr/local/bin/chromedriver'}
 browser = Browser('chrome', **executable_path)
 
-# Nasa Mars article scraping
-# Visit the mars nasa news site
-url = 'https://mars.nasa.gov/news/'
-browser.visit(url)
+## Nasa Mars article scraping
 
-# Optional delay for loading the page
-browser.is_element_present_by_css("ul.item_list li.slide", wait_time=1)
+def mars_news(browser):
+    # Visit the mars nasa news site
+    url = 'https://mars.nasa.gov/news/'
+    browser.visit(url)
 
-html = browser.html
-news_soup = soup(html, 'html.parser')
-slide_elem = news_soup.select_one('ul.item_list li.slide')
+    # Optional delay for loading the page
+    browser.is_element_present_by_css("ul.item_list li.slide", wait_time=1)
 
-# Scrape the title of the first article
-slide_elem.find("div", class_='content_title')
+    # Convert the browser html to a soup object and then quit the browser
+    html = browser.html
+    news_soup = soup(html, 'html.parser')
 
-# Use parent elememt to find first 'a' tag and save it
-news_title = slide_elem.find('div', class_='content_title').get_text()
-news_title
+    slide_elem = news_soup.select_one('ul.item_list li.slide')
 
-# Use the parent element to find the paragraph text
-news_p = slide_elem.find('div', class_='article_teaser_body').get_text()
-news_p
+    # Scrape the title of the first article
+    slide_elem.find("div", class_='content_title')
 
-# Nasa JPL Image Scraping
+    # Use parent elememt to find first 'a' tag and save it
+    news_title = slide_elem.find('div', class_='content_title').get_text()
+    news_title
+
+    # Use the parent element to find the paragraph text
+    news_p = slide_elem.find('div', class_='article_teaser_body').get_text()
+    news_p
+
+    return news_title, news_p
+
+## Nasa JPL Image Scraping
+
 # Visit URL
 url = 'https://data-class-jpl-space.s3.amazonaws.com/JPL_Space/index.html'
 browser.visit(url)
