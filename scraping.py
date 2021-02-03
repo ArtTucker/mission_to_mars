@@ -3,12 +3,27 @@
 from splinter import Browser
 from bs4 import BeautifulSoup as soup
 import pandas as pd
-# Set the executable path and initialize the chrome browser in splinter
-executable_path = {'executable_path': '/usr/local/bin/chromedriver'}
-browser = Browser('chrome', **executable_path)
+import datetime as dt
+
+def scrape_all():
+   # Initiate headless driver for deployment
+   browser = Browser("chrome", executable_path="chromedriver", headless=True)
+
+   news_title, news_paragraph = mars_news(browser)
+
+   # Run all scraping function and store results in dictionary
+   data = {
+       "news_title": news_title,
+       "news_paragraph": news_paragraph,
+       "featured_image": featured_image(browser),
+       "facts": mars_facts(),
+       "last_modified": dt.datetime.now()
+   }
+   # stop webdriver and return data
+   browser.quit()
+   return data
 
 ## Nasa Mars article scraping
-
 def mars_news(browser):
     # Visit the mars nasa news site
     url = 'https://mars.nasa.gov/news/'
@@ -34,7 +49,6 @@ def mars_news(browser):
     return news_title, news_p
 
 ## Nasa JPL Image Scraping
-
 def featured_image(browser):
     # Visit URL
     url = 'https://data-class-jpl-space.s3.amazonaws.com/JPL_Space/index.html'
@@ -72,6 +86,8 @@ def mars_facts():
     df.columns = ['Description','Mars']
     df.set_index('Description', inplace=True)
     # convert df into html format, add bootstrap
-    return df.to_html()
+    return df.to_html(classes="table table-striped")
 
-browser.quit()
+if __name__ == "__main__":
+    # if running as script, print scraped data
+    print(scrape_all())
