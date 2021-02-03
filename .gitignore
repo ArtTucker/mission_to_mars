@@ -124,3 +124,4 @@ dmypy.json
 # Pyre type checker
 .pyre/
 practice.ipynb
+.vscode/settings.json
