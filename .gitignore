@@ -125,3 +125,4 @@ dmypy.json
 .pyre/
 practice.ipynb
 .vscode/settings.json
+.DS_Store
