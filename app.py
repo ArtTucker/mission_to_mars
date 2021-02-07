@@ -1,6 +1,8 @@
 # Dependencies
 from flask import Flask, render_template, request, redirect
 from flask_pymongo import PyMongo
+# from flask_table import Table, Col
+
 import scraping
 
 app = Flask(__name__)
