@@ -1,0 +1,16 @@
+body {
+    margin: 5px;
+    padding-bottom: 70px;
+    background-color: rgb(128, 68, 0);
+  }
+
+.btn {
+    background-color: #ce7e16;
+    border: 2px solid #ad670acc;
+    color: #fff;
+    border-radius: 0;
+}
+
+jumbotron {
+  background-color: #ff7626 !important;
+}
